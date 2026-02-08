@@ -1,1 +1,90 @@
-/* You can add global styles to this file, and also import other style files */
+/* =========================
+   Global Base Styles
+   ========================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Base font + strict look */
+html,
+body {
+  height: 100%;
+  font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  background: #f5f6fa;
+  color: #111827;
+}
+
+/* Smooth text rendering */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Links */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Inputs + Buttons inherit font */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* Buttons reset */
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* Default form elements */
+input {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px 12px;
+  outline: none;
+  transition: 0.2s;
+}
+
+input:focus {
+  border-color: #3b82f6;
+}
+
+/* Headings strict */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+/* Paragraphs */
+p {
+  color: #475569;
+}
+
+/* Utility container */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 18px;
+}
