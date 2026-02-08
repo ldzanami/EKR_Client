@@ -1,0 +1,25 @@
+<div class="page">
+  <form class="auth-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <h1 class="title">Авторизация</h1>
+
+    <label class="field">
+      <span>Логин</span>
+      <input type="text" formControlName="login" placeholder="Введите логин" />
+    </label>
+
+    <label class="field">
+      <span>Пароль</span>
+      <input
+        type="password"
+        formControlName="password"
+        placeholder="Введите пароль"
+      />
+    </label>
+
+    <button class="btn" type="submit">Войти</button>
+
+    <a class="link" routerLink="/auth/register">
+      Нет аккаунта? Зарегистрироваться
+    </a>
+  </form>
+</div>

@@ -1,0 +1,78 @@
+<div class="layout">
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">BL Service</div>
+
+    <nav class="nav">
+      <a routerLink="/" class="active">Главная</a>
+      <a routerLink="/projects">Проекты</a>
+      <a routerLink="/analytics">Аналитика</a>
+      <a routerLink="/settings">Настройки</a>
+    </nav>
+
+    <div class="profile">
+      <span class="name">{{ user.name }}</span>
+      <img class="avatar" [src]="user.avatar" alt="avatar" />
+
+      <button class="logout" (click)="onLogout()">Выйти</button>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="content">
+    <section class="welcome">
+      <h1>Добро пожаловать, {{ user.name }}</h1>
+      <p>
+        Это главная панель управления. Здесь ты можешь отслеживать активность,
+        проекты и системные события.
+      </p>
+    </section>
+
+    <section class="cards">
+      <div class="card">
+        <h3>Активные проекты</h3>
+        <p>3 проекта сейчас в работе</p>
+      </div>
+
+      <div class="card">
+        <h3>Системные уведомления</h3>
+        <p>2 новых события за сегодня</p>
+      </div>
+
+      <div class="card">
+        <h3>Статус безопасности</h3>
+        <p>Все сервисы работают нормально</p>
+      </div>
+    </section>
+
+    <section class="table">
+      <h2>Последняя активность</h2>
+
+      <div class="table-box">
+        <div class="row header-row">
+          <span>Событие</span>
+          <span>Дата</span>
+          <span>Статус</span>
+        </div>
+
+        <div class="row">
+          <span>Вход в систему</span>
+          <span>09.02.2026</span>
+          <span class="ok">Успешно</span>
+        </div>
+
+        <div class="row">
+          <span>Обновление настроек</span>
+          <span>08.02.2026</span>
+          <span class="warn">Требует проверки</span>
+        </div>
+
+        <div class="row">
+          <span>Создан новый проект</span>
+          <span>07.02.2026</span>
+          <span class="ok">Выполнено</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
