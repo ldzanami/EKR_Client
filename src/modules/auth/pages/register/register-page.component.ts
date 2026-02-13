@@ -55,13 +55,21 @@ export class RegisterPage {
     const keyRSA = this.encryptionService.publicKeyRSA; 
     console.log('keyRSA', keyRSA);
 
-    const { cipherText, iv } = await this.encryptionService.encrypt(formValueStr, keyAES, AlgorithmNames.CBC);
-    const { cipherText:encryptedKeyAES } = await this.encryptionService.encrypt(formValueStr, keyRSA as CryptoKey, AlgorithmNames.OAEP);
+    const rawKey = await crypto.subtle.exportKey("raw", keyAES);
 
-    const regiterRequest = await this.apiService.post('auth/register', {
+    const { cipherText, iv } = await this.encryptionService.encrypt(formValueStr, keyAES, AlgorithmNames.CBC, true);
+    const encryptedKeyAES = await crypto.subtle.encrypt(
+    {
+      name: "RSA-OAEP"
+    },
+    keyRSA as CryptoKey,
+    rawKey
+  );
+
+    const regiterRequest = await this.apiService.post('auth/register', {  
       content: cipherText,
       iv,
-      aesKey: encryptedKeyAES,
+      aesKey: this.encryptionService.arrayBufferToBase64(encryptedKeyAES),
       type: RequestTypes.REGISTER,
     })
 

@@ -121,7 +121,7 @@ export class EncryptionService {
   // -----------------------------
   // Utils: Base64 ↔ ArrayBuffer
   // -----------------------------
-  private arrayBufferToBase64(buffer: ArrayBuffer): string {
+  public arrayBufferToBase64(buffer: ArrayBuffer): string {
     const bytes = new Uint8Array(buffer);
     let binary = '';
 
@@ -129,7 +129,7 @@ export class EncryptionService {
 
     return btoa(binary);
   }
-
+  
   private base64ToArrayBuffer(base64: string): ArrayBuffer {
     const binary = atob(base64);
     const bytes = new Uint8Array(binary.length);
@@ -155,7 +155,7 @@ export class EncryptionService {
       {
         name: AlgorithmNames.OAEP,
         hash: 'SHA-256',
-      },
+      } as RsaHashedImportParams,
       false,
       ['encrypt']
     );
