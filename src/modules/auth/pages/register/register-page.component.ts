@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -6,7 +6,7 @@ import {
   Validators,
   FormGroup,
 } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { EncryptionService } from '../../../../services/encryption.service';
 import { AlgorithmNames } from '../../../../enums/algorithm-names';
 import { ApiService } from '../../../../services/api-service.service';
@@ -21,6 +21,8 @@ import { RequestTypes } from '../../../../enums/request-types';
 })
 export class RegisterPage {
   public form: FormGroup;
+
+  private router = inject(Router);
 
   constructor(
     private fb: FormBuilder,
@@ -46,35 +48,12 @@ export class RegisterPage {
       return;
     }
 
-    const formValueStr = JSON.stringify({ username, password });
-    console.log('formValueStr', formValueStr);
+    const requsestBody = await this.encryptionService.prepareObjectToSendPost({ username, password }, RequestTypes.REGISTER);
 
-    const keyAES = await this.encryptionService.generateAESKey();
-    console.log('keyAES', keyAES);
+    const regiterRequest = await this.apiService.post('auth/register', requsestBody);
 
-    const keyRSA = this.encryptionService.publicKeyRSA; 
-    console.log('keyRSA', keyRSA);
-
-    const rawKey = await crypto.subtle.exportKey("raw", keyAES);
-
-    const { cipherText, iv } = await this.encryptionService.encrypt(formValueStr, keyAES, AlgorithmNames.CBC, true);
-    const encryptedKeyAES = await crypto.subtle.encrypt(
-    {
-      name: "RSA-OAEP"
-    },
-    keyRSA as CryptoKey,
-    rawKey
-  );
-
-    const regiterRequest = await this.apiService.post('auth/register', {  
-      content: cipherText,
-      iv,
-      aesKey: this.encryptionService.arrayBufferToBase64(encryptedKeyAES),
-      type: RequestTypes.REGISTER,
-    })
-
-    regiterRequest.subscribe((res) => {
-      console.log('regiterRequest_res', res);
+    regiterRequest.subscribe(() => {
+      this.router.navigateByUrl('auth/login');
     });
   }
 }

@@ -1,5 +1,5 @@
 export enum RequestTypes {
     REGISTER = 'register',
-    AUTH = 'auth',
+    AUTH = 'authorize',
     REFRESH = 'refresh',
 }

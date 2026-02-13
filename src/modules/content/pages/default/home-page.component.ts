@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home-page',
@@ -10,13 +10,14 @@ import { RouterModule } from '@angular/router';
   styleUrl: './home-page.component.scss',
 })
 export class HomePage {
+  private router = inject(Router);
+  
   user = {
     name: 'George Linkoln',
     avatar: 'https://i.pravatar.cc/80?img=12',
   };
 
-  onLogout() {
-    console.log('Logout...');
-    // тут потом будет AuthService.logout()
+  public onLogout() {
+    this.router.navigateByUrl('auth/login')
   }
 }

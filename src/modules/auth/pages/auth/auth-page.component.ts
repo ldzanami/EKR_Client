@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ApiService } from '../../../../services/api-service.service';
 import { finalize } from 'rxjs';
 import { RequestTypes } from '../../../../enums/request-types';
+import { EncryptionService } from '../../../../services/encryption.service';
 
 @Component({
   selector: 'app-auth-page',
@@ -16,31 +17,32 @@ import { RequestTypes } from '../../../../enums/request-types';
 export class AuthPage {
   public form: FormGroup;
 
-  constructor(private fb: FormBuilder, private readonly api: ApiService) {
+  private router = inject(Router);
+
+  constructor(
+    private fb: FormBuilder,
+    private readonly apiService: ApiService,
+    private readonly encryptionService: EncryptionService,
+  ) {
     this.form = this.fb.group({
-      login: ['', [Validators.required]],
+      username: ['', [Validators.required]],
       password: ['', [Validators.required]],
     });
 
   }
 
-  public onSubmit() {
+  public async onSubmit(): Promise<void> {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
-    this.api.post('auth/auth', {
-      content: 'asdasd',
-      type: RequestTypes.AUTH,
-      aesKey: 'asd',
-      iv: 'asd',
-    }).then((obs) => {
-      obs.pipe(finalize(() => {
-      console.log('ХУЙ');
-    })).subscribe((res) => {
-      console.log('res', res);
-    })
-    })
+    const requsestBody = await this.encryptionService.prepareObjectToSendPost(this.form.value, RequestTypes.AUTH);
+
+    const regiterRequest = await this.apiService.post('auth/auth', requsestBody);
+
+    regiterRequest.subscribe(() => {
+      this.router.navigateByUrl('default');
+    });
   }
 }

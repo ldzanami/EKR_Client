@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { ApiService } from './api-service.service';
+import { ApiService, TPostRequestBody } from './api-service.service';
 import { AlgorithmNames } from '../enums/algorithm-names';
+import { RequestTypes } from '../enums/request-types';
 
 interface IPublicKeyResponse {
   Key: string;
@@ -118,6 +119,38 @@ export class EncryptionService {
     });
   }
 
+  /**
+   * Подготовка и шифровка данных для post запроса
+   * @param obj объект - контент запроса
+   * @returns промис с телом post запроса
+   */
+  public async prepareObjectToSendPost(obj: object, type: RequestTypes): Promise<TPostRequestBody> {
+    const formValueStr = JSON.stringify(obj);
+
+    const keyAES = await this.generateAESKey();
+
+    const keyRSA = this.publicKeyRSA; 
+
+    const rawKey = await crypto.subtle.exportKey("raw", keyAES);
+
+    const { cipherText: encryptedObjValue, iv } = await this.encrypt(formValueStr, keyAES, AlgorithmNames.CBC, true);
+
+    const encryptedKeyAES = await crypto.subtle.encrypt(
+      {
+        name: "RSA-OAEP"
+      },
+      keyRSA as CryptoKey,
+      rawKey
+    );
+
+    return {
+      content: encryptedObjValue,
+      iv,
+      aesKey: this.arrayBufferToBase64(encryptedKeyAES),
+      type: type,
+    }
+  }
+
   // -----------------------------
   // Utils: Base64 ↔ ArrayBuffer
   // -----------------------------
@@ -146,8 +179,6 @@ export class EncryptionService {
    */
   private async importKeyRSA(key: string): Promise<void> {
     const byteKey = Uint8Array.from(atob(key), c => c.charCodeAt(0));
-    console.log('key', key);
-    console.log('byteKey', byteKey);
 
     const publicKeyRSA = await window.crypto.subtle.importKey(
       'spki',
@@ -160,7 +191,6 @@ export class EncryptionService {
       ['encrypt']
     );
 
-    console.log('publicKeyRSA', publicKeyRSA);
 
     this.publicKeyRSA = publicKeyRSA;
   }

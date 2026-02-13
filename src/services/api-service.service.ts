@@ -22,6 +22,8 @@ interface IGeneralPackageTemplate {
   hash: string;
 }
 
+export type TPostRequestBody = Omit<IGeneralPackageTemplate, 'hash' | 'requestId'>;
+
 /**
  * Сервис для выполнения HTTP-запросов к серверному API.
  * Оборачивает `HttpClient` и предоставляет удобные методы `get` и `post`.
@@ -69,7 +71,7 @@ export class ApiService {
    * @param body Тело запроса, соответствующее `IGeneralPackageTemplate`.
    * @returns Промис с `Observable` с результатом запроса типа `T`.
    */
-  public async post<T>(url: string, body: Omit<IGeneralPackageTemplate, 'hash' | 'requestId'>): Promise<Observable<T>> {
+  public async post<T>(url: string, body: TPostRequestBody): Promise<Observable<T>> {
     const requestId = this.getUUIDString();
     const hash = await this.getObjectHash({
       ...body,
@@ -81,8 +83,6 @@ export class ApiService {
       requestId,
       hash
     };
-
-    console.log('prepareBody', prepareBody);
 
     return this.http.post<T>(`${this.baseUrl}${url}`, prepareBody);
   }
