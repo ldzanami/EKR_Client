@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { EncryptionService } from '../services/encryption.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -11,10 +12,15 @@ import { EncryptionService } from '../services/encryption.service';
 })
 export class App implements OnInit {
 
-  constructor(private readonly encryptionService: EncryptionService) {}
+  constructor(
+    private readonly encryptionService: EncryptionService,
+    private readonly authService: AuthService,
+  ) {}
 
   public ngOnInit(): void {
-    this.encryptionService.getPublicKeyRSA();
+    // this.encryptionService.getPublicKeyRSA();
+    console.log('this.authService.refreshAccessToken();');
+    this.authService.refreshAccessToken();
   }
 
 }

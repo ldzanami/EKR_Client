@@ -7,6 +7,7 @@ import { RequestTypes } from '../../../../enums/request-types';
 import { EncryptionService } from '../../../../services/encryption.service';
 import { AlgorithmNames } from '../../../../enums/algorithm-names';
 import { StorageKeyEnum } from '../../../../enums/storage-keys';
+import { AuthService } from '../../../../services/auth.service';
 
 @Component({
   selector: 'app-auth-page',
@@ -24,6 +25,7 @@ export class AuthPage {
     private fb: FormBuilder,
     private readonly apiService: ApiService,
     private readonly encryptionService: EncryptionService,
+    private readonly authService: AuthService,
   ) {
     this.form = this.fb.group({
       username: ['', [Validators.required]],
@@ -54,13 +56,15 @@ export class AuthPage {
     const regiterRequest = await this.apiService.post<string>('auth/auth', requestBody);
 
     regiterRequest.subscribe(async (res) => {
-      // const decryptedResponse = await this.encryptionService.decrypt({
-      //     iv: requestBody.iv,
-      //     cipherText: res,
-      //   },
-      //   AlgorithmNames.CBC,
-      //   keyAES
-      // );
+      const decryptedResponse = await this.encryptionService.decrypt({
+          iv: requestBody.iv,
+          cipherText: res,
+        },
+        AlgorithmNames.CBC,
+        keyAES
+      );
+
+      this.authService.login(JSON.parse(decryptedResponse))
 
       this.router.navigateByUrl('default');
     });

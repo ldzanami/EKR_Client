@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ApiService, TPostRequestBody } from './api-service.service';
 import { AlgorithmNames } from '../enums/algorithm-names';
 import { RequestTypes } from '../enums/request-types';
+import { firstValueFrom } from 'rxjs';
 
 interface IPublicKeyResponse {
   Key: string;
@@ -118,10 +119,9 @@ export class EncryptionService {
   /**
    * Получить публичный ключ шифрования
    */
-  public getPublicKeyRSA(): void {
-    this.apiService.get<IPublicKeyResponse>('auth/get-public-key').subscribe((res) => {
-      this.importKeyRSA(res.Key)
-    });
+  public async getPublicKeyRSA(): Promise<void> {
+    const publicKeyResponce = await firstValueFrom(this.apiService.get<IPublicKeyResponse>('auth/get-public-key'))
+    return this.importKeyRSA(publicKeyResponce.Key);
   }
 
   /**
@@ -129,16 +129,16 @@ export class EncryptionService {
    * @param obj объект - контент запроса
    * @returns промис с телом post запроса
    */
-  public async prepareObjectToSendPost(obj: object, type: RequestTypes): Promise<IPreparedObject> {
-    const formValueStr = JSON.stringify(obj);
-
+  public async prepareObjectToSendPost(obj: object | string, type: RequestTypes): Promise<IPreparedObject> {
+    const valueStr = JSON.stringify(obj);
+    console.log('valueStr', valueStr);
     const keyAES = await this.generateAESKey();
 
     const keyRSA = this.publicKeyRSA; 
 
     const rawKey = await crypto.subtle.exportKey("raw", keyAES);
 
-    const { cipherText: encryptedObjValue, iv } = await this.encrypt(formValueStr, keyAES, AlgorithmNames.CBC, true);
+    const { cipherText: encryptedObjValue, iv } = await this.encrypt(valueStr, keyAES, AlgorithmNames.CBC, true);
 
     const encryptedKeyAES = await crypto.subtle.encrypt(
       {
@@ -199,7 +199,7 @@ export class EncryptionService {
       ['encrypt']
     );
 
-
     this.publicKeyRSA = publicKeyRSA;
+    console.log('this.publicKeyRSA = publicKeyRSA;');    
   }
 }

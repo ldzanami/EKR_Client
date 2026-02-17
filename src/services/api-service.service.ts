@@ -33,7 +33,7 @@ export type TPostRequestBody = Omit<IGeneralPackageTemplate, 'hash' | 'requestId
 })
 export class ApiService {
   /** Базовый URL для всех запросов API. */
-  private readonly baseUrl = 'https://localhost:32769/api/';
+  private readonly baseUrl = 'https://localhost:32773/api/';
 
   /**
    * Создаёт экземпляр `ApiService`.
