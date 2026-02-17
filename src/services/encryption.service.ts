@@ -131,7 +131,6 @@ export class EncryptionService {
    */
   public async prepareObjectToSendPost(obj: object | string, type: RequestTypes): Promise<IPreparedObject> {
     const valueStr = JSON.stringify(obj);
-    console.log('valueStr', valueStr);
     const keyAES = await this.generateAESKey();
 
     const keyRSA = this.publicKeyRSA; 
@@ -199,7 +198,6 @@ export class EncryptionService {
       ['encrypt']
     );
 
-    this.publicKeyRSA = publicKeyRSA;
-    console.log('this.publicKeyRSA = publicKeyRSA;');    
+    this.publicKeyRSA = publicKeyRSA; 
   }
 }

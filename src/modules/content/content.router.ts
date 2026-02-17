@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { refreshTokenGuard } from '../../guards/auth.guard';
 
 export const routes: Routes = [
     {
@@ -14,5 +15,6 @@ export const routes: Routes = [
                 loadComponent: () => import('./pages/default/home-page.component').then((component) => component.HomePage),
             }
         ],
+        canActivate: [refreshTokenGuard],
     },
 ];

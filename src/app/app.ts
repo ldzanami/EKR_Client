@@ -18,8 +18,6 @@ export class App implements OnInit {
   ) {}
 
   public ngOnInit(): void {
-    // this.encryptionService.getPublicKeyRSA();
-    console.log('this.authService.refreshAccessToken();');
     this.authService.refreshAccessToken();
   }
 

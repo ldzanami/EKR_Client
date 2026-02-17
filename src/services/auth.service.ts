@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { StorageKeyEnum } from '../enums/storage-keys';
-import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs';
 import { ApiService } from './api-service.service';
 import { EncryptionService } from './encryption.service';
 import { RequestTypes } from '../enums/request-types';
 import { AlgorithmNames } from '../enums/algorithm-names';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 export interface AuthSessionDto {
   SessionId: string;
@@ -18,6 +20,8 @@ export interface AuthSessionDto {
 export class AuthService {
 
   private accessToken: string | null = null;
+
+  private route = inject(Router);
 
   /**
    * Установить значение токена доступа
@@ -64,6 +68,10 @@ export class AuthService {
     sessionStorage.removeItem(StorageKeyEnum.SESSION_KEY);
   }
 
+  /**
+   * Обновить токен доступа
+   * @returns 
+   */
   public async refreshAccessToken(): Promise<void> {
     const refresh = sessionStorage.getItem(StorageKeyEnum.REFRESH_TOKEN_KEY);
     
@@ -75,7 +83,14 @@ export class AuthService {
 
     const request = await this.apiService.post<string>('auth/refresh', requestBody);
 
-    request.subscribe(async (res) => {
+    request.pipe(
+      catchError(() => {
+      this.logout();
+      this.route.navigate(['auth/login']);
+
+      return [];
+    })
+    ).subscribe(async (res) => {
       const decryptedResponse = await this.encryptionService.decrypt({
           iv: requestBody.iv,
           cipherText: res,
@@ -84,7 +99,7 @@ export class AuthService {
         keyAES
       );
 
-      console.log('decryptedResponse', decryptedResponse);
+      this.login(JSON.parse(decryptedResponse))
     });
   }
 }
