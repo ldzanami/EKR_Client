@@ -48,9 +48,9 @@ export class RegisterPage {
       return;
     }
 
-    const requsestBody = await this.encryptionService.prepareObjectToSendPost({ username, password }, RequestTypes.REGISTER);
+    const { requestBody } = await this.encryptionService.prepareObjectToSendPost({ username, password }, RequestTypes.REGISTER);
 
-    const regiterRequest = await this.apiService.post('auth/register', requsestBody);
+    const regiterRequest = await this.apiService.post('auth/register', requestBody);
 
     regiterRequest.subscribe(() => {
       this.router.navigateByUrl('auth/login');

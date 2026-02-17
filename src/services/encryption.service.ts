@@ -17,6 +17,11 @@ interface AlgorithmParams {
   iv?: BufferSource | Uint8Array<ArrayBufferLike>,
 }
 
+interface IPreparedObject {
+  requestBody: TPostRequestBody;
+  keyAES: CryptoKey;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -124,7 +129,7 @@ export class EncryptionService {
    * @param obj объект - контент запроса
    * @returns промис с телом post запроса
    */
-  public async prepareObjectToSendPost(obj: object, type: RequestTypes): Promise<TPostRequestBody> {
+  public async prepareObjectToSendPost(obj: object, type: RequestTypes): Promise<IPreparedObject> {
     const formValueStr = JSON.stringify(obj);
 
     const keyAES = await this.generateAESKey();
@@ -144,10 +149,13 @@ export class EncryptionService {
     );
 
     return {
-      content: encryptedObjValue,
-      iv,
-      aesKey: this.arrayBufferToBase64(encryptedKeyAES),
-      type: type,
+      requestBody: {
+        content: encryptedObjValue,
+        iv,
+        aesKey: this.arrayBufferToBase64(encryptedKeyAES),
+        type: type,
+      },
+      keyAES
     }
   }
 
