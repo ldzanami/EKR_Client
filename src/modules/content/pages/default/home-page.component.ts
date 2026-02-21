@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { StorageKeyEnum } from '../../../../enums/storage-keys';
+import { AuthService } from '../../../../services/auth.service';
 
 @Component({
   selector: 'app-home-page',
@@ -15,7 +16,7 @@ export class HomePage {
   
   public user: { name: string, avatar: string };
 
-  constructor() {
+  constructor(private readonly authService: AuthService) {
     const sessionData = sessionStorage.getItem(StorageKeyEnum.SESSION_KEY);
 
     this.user = {
@@ -27,6 +28,7 @@ export class HomePage {
 
 
   public onLogout() {
+    this.authService.logout();
     this.router.navigateByUrl('auth/login')
   }
 }
